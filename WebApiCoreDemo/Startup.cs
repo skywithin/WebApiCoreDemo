@@ -32,12 +32,17 @@ namespace WebApiCoreDemo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            using (var serviceScope = app.ApplicationServices.CreateScope())
             {
-                app.UseDeveloperExceptionPage();
+                var context = serviceScope.ServiceProvider.GetService<TodoContext>();
+
+                // Seed data
+                context.TodoItems.Add(new TodoItem { Name = "Item1" });
+                context.SaveChanges();
             }
 
             app.UseMvc();
         }
+        
     }
 }
